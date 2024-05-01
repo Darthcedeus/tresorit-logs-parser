@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-header">
+        <h3>Add data</h3>
+      </div>
+      <div class="card-body">
+        <p class="card-text">Data can be added by uploading shared links csv exported from Tresorit</p>
+        <form action = "/process" method = "post" enctype="multipart/form-data">   
+          <div class="mb-3">
+            <input class="form-control" type="file" id="formFile" name="file">
+          </br>
+            <input class="btn btn-primary" type="submit" value="Upload">
+          </div>  
+        </form>   
+      </div>
+    </div>
+  </div>
+</div>
+
+</br>
+
+<div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-header">
+          <h3>Active Links</h3>
+        </div>
+        <div class="card-body">
+          <table id="active-links" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th>Tresor</th>
+                <th>Creator Email</th>
+                <th>Link Target</th>
+                <th>Password Protected</th>
+                <th>Expiration Date</th>
+                <th>Email Verification</th>
+                <th>Email Allow List</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for link in active_links %}
+              <tr>
+                <td>{{ link.tresor }}</td>
+                <td>{{ link.creatorEmail }}</td>
+                <td>{{ link.linkTarget }}</td>
+                <td>{{ link.passwordProtected }}</td>
+                <td>{{ link.expirationDate }}</td>
+                <td>{{ link.emailVerification }}</td>
+                <td>{{ link.emailAllowList }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>        
+    </div>
+</div>
+  
+</br>
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-header">
+        <h3>Inactive Links</h3>
+      </div>
+      <div class="card-body">
+        <table id="inactive-links" class="table table-striped" style="width:100%">
+          <thead>
+            <tr>
+              <th>Tresor</th>
+              <th>Creator Email</th>
+              <th>Link Target</th>
+              <th>Password Protected</th>
+              <th>Expiration Date</th>
+              <th>Email Verification</th>
+              <th>Email Allow List</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for link in inactive_links %}
+          <tr>
+            <td>{{ link.tresor }}</td>
+            <td>{{ link.creatorEmail }}</td>
+            <td>{{ link.linkTarget }}</td>
+            <td>{{ link.passwordProtected }}</td>
+            <td>{{ link.expirationDate }}</td>
+            <td>{{ link.emailVerification }}</td>
+            <td>{{ link.emailAllowList }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>        
+  </div>
+</div>
+
+<script>	
+  new DataTable('#active-links');
+  new DataTable('#inactive-links');
+</script>
+
+{% endblock %}
