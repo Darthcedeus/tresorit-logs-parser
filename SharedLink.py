@@ -14,6 +14,7 @@ class SharedLink():
     passwordProtected = ""
     openCount = ""
     openCountLimit = ""
+    creationDate = ""
     expirationDate = ""
     detailedAccessLogs = ""
     emailVerification = ""
@@ -33,6 +34,7 @@ class SharedLink():
             passwordProtected = "",
             openCount = "",
             openCountLimit = "",
+            creationDate = "",
             expirationDate = "",
             detailedAccessLogs = "",
             emailVerification = "",
@@ -51,6 +53,7 @@ class SharedLink():
         self.passwordProtected = passwordProtected,
         self.openCount = openCount,
         self.openCountLimit = openCountLimit,
+        self.creationDate = creationDate,
         self.expirationDate = expirationDate,
         self.detailedAccessLogs = detailedAccessLogs,
         self.emailVerification = emailVerification,
@@ -76,6 +79,7 @@ class SharedLink():
         self.passwordProtected = self.passwordProtected[0]
         self.openCount = self.openCount[0]
         self.openCountLimit = self.openCountLimit[0]
+        self.creationDate = self.creationDate[0]
         self.expirationDate = self.expirationDate[0]
         self.detailedAccessLogs = self.detailedAccessLogs[0]
         self.emailVerification = self.emailVerification[0]
