@@ -24,6 +24,7 @@ class SharedLink():
     emailAllowList = []
     suspensionDate = ""
     linkID = ""
+    cooperativeLink = ""
 
     def __init__(self,
             active = "",
@@ -43,7 +44,8 @@ class SharedLink():
             watermarkPosition = "",
             emailAllowList = [],
             suspensionDate = "",
-            linkID = ""
+            linkID = "",
+            cooperativeLink = ""
         ):
         self.active = active,
         self.tresor = tresor,
@@ -62,7 +64,8 @@ class SharedLink():
         self.watermarkPosition = watermarkPosition,
         self.emailAllowList = emailAllowList,
         self.suspensionDate = suspensionDate,
-        self.linkID = linkID
+        self.linkID = linkID,
+        self.cooperativeLink = cooperativeLink
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -89,3 +92,4 @@ class SharedLink():
         self.emailAllowList = self.emailAllowList[0]
         self.suspensionDate = self.suspensionDate[0]
         self.linkID = self.linkID[0]
+        self.cooperativeLink = self.cooperativeLink[0]
