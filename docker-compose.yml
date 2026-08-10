@@ -1,0 +1,17 @@
+services:
+  tresorit-logs-parser:
+    build:
+      context: .
+    image: tresorit-logs-parser:local
+    container_name: tresorit-logs-parser
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-5000}:5000"
+    environment:
+      FLASK_ENV: production
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/', timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
