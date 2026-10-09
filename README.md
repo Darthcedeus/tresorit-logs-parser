@@ -50,6 +50,25 @@ may have different snapshot dates; check the source filenames before comparing.
   ranges. Snapshot date charts show record dates, not historical state changes.
 - Sort all columns, page through records, and download the full filtered result
   as CSV, including review notes. Dates and numbers sort by their typed values.
+- In **Link activity** and **Device status**, explore the offline country map.
+  Country shading can show records, review notes, failed events or external
+  events (the last two apply to link activity). Click a country or city to filter
+  the records and CSV download; reset filters to clear the selection.
+- Device geography offers latest activity, creation and revocation locations.
+  Selecting a source also selects its date field when available. Device counts
+  describe snapshots, not a historical activity trail. Country rankings show
+  record counts and distinct recorded IP strings; city cards show the top 12
+  groups, and the city dropdown includes all groups in the selected country.
+
+The map uses the export's country codes and recorded city labels. It does not
+perform IP geolocation, infer travel or place cities at guessed coordinates.
+Map/country totals follow search, status, review and date filters before the
+country/city selection, so other countries remain available for comparison.
+Missing locations remain counted and filterable. Countries without a matching
+outline are listed and reported rather than silently omitted. IP-based locations
+may reflect VPNs or proxies and cannot establish a person's physical whereabouts.
+The public-domain Natural Earth map is bundled locally (see
+`static/MAP-LICENSE.md`); no IP addresses or log data are sent to map services.
 
 Review notes are transparent prompts, not a security incident verdict. Rules flag
 active links without passwords, expiration or email verification; active links
@@ -170,7 +189,7 @@ but does not restrict who can retrieve their contents through the app.
 
 ## Repository contents
 
-The dashboard lives in `app.py`, `analysis.py`, `templates/` and `static/`.
+The dashboard lives in `app.py`, `analysis.py`, `locations.py`, `templates/` and `static/`.
 `Parser.py` and `import_limits.py` handle CSV validation and resource budgets.
 `SharedLink.py` remains for compatibility with the original parser API.
 Tests live in `tests/`; GitHub Actions runs them on Python 3.10 and 3.12 and

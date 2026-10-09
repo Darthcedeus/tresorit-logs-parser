@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from Parser import DATE_COLUMNS, MISSING, NUMBER_COLUMNS, REPORT_TYPES
 from import_limits import DEFAULT_LIMITS, OutputBudget
+from locations import location_sources, recorded_location
 
 
 def date_value(value):
@@ -30,7 +31,9 @@ def analyze(reports, now=None, stale_days=90, limits=DEFAULT_LIMITS):
     result = []
     for report in reports:
         spec = REPORT_TYPES[report["kind"]]
+        sources = location_sources(report["kind"], report["columns"])
         output = {**report, "label": spec.label, "date_column": spec.date, "group_column": spec.group, "status_column": spec.status, "date_columns": [col for col in report["columns"] if col in DATE_COLUMNS], "rows": [], "warnings": []}
+        output["location_sources"] = sources
         duplicates = set()
         invalid = 0
         duplicate_count = 0
@@ -103,6 +106,8 @@ def analyze(reports, now=None, stale_days=90, limits=DEFAULT_LIMITS):
                     notes.append("Unrevoked device has no valid last activity date")
             row["Review notes"] = "; ".join(notes)
             analyzed_row = {"cells": row, "dates": dates, "numbers": numbers, "notes": notes}
+            if sources:
+                analyzed_row["locations"] = {source["key"]: recorded_location(original, source) for source in sources}
             output_budget.add(analyzed_row)
             output["rows"].append(analyzed_row)
         if report["kind"] == "link_activity":

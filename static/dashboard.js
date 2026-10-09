@@ -22,8 +22,12 @@
   };
   let selected = reports[0], page = 1, sortColumn = "", direction = 1, currentRows = [];
   let renderTimer;
+  const geography = window.LocationAnalysis.create(
+    () => { page = 1; render(); },
+    dateColumn => { if (selected.date_columns.includes(dateColumn)) $("date-field").value = dateColumn; page = 1; render(); }
+  );
 
-  function matches(row, report, local = true) {
+  function matches(row, report, local = true, locationFilter = true) {
     const query = $("search").value.trim().toLowerCase();
     if (query && !Object.values(row.cells).some(value => String(value).toLowerCase().includes(query))) return false;
     if (!local) return true;
@@ -35,7 +39,7 @@
       const date = row.dates[$("date-field").value]?.slice(0, 10);
       if (!date || (from && date < from) || (to && date > to)) return false;
     }
-    return true;
+    return !locationFilter || geography.matches(row);
   }
 
   function tabs() {
@@ -65,6 +69,7 @@
     $("report-title").textContent = report.label;
     $("report-source").textContent = report.filename;
     $("warnings").replaceChildren(...report.warnings.map(text => node("p", text, "warning")));
+    geography.setReport(report);
     render();
     const scroll = $("records").closest(".table-scroll");
     scroll.scrollLeft = 0;
@@ -212,10 +217,11 @@
     $("filter-error").textContent = invalidRange ? "The From date must be on or before the To date." : "";
     currentRows = selected.rows.filter(row => matches(row, selected));
     if (sortColumn) currentRows.sort(compare);
-    tabs(); metrics(currentRows); charts(currentRows); table();
+    tabs(); metrics(currentRows); charts(currentRows); geography.render(selected.rows.filter(row => matches(row, selected, true, false)), currentRows); table();
   }
 
   function reset() {
+    geography.reset();
     $("search").value = ""; $("status").value = ""; $("from").value = ""; $("to").value = ""; $("review-only").checked = false; page = 1;
   }
 
