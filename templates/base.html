@@ -10,7 +10,7 @@
   <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="/">T<span class="brand-dot">.</span> <span>Tresorit <small>LOG EXPLORER</small></span></a><div class="topbar-actions"><span class="local-badge">Local analysis · No external assets</span><button id="theme-toggle" type="button" aria-pressed="false">Dark mode</button></div></header>
+  <header class="topbar"><a class="brand" href="/">T<span class="brand-dot">.</span> <span>Tresorit <small>LOG EXPLORER</small></span></a><div class="topbar-actions"><span class="local-badge">Local analysis · No external assets</span><a class="button subtle" href="https://github.com/Darthcedeus/tresorit-logs-parser" target="_blank" rel="noopener noreferrer" aria-label="View source on GitHub (opens in a new tab)">GitHub ↗</a><button id="theme-toggle" type="button" aria-pressed="false">Dark mode</button></div></header>
   <main>{% block content %}{% endblock %}</main>
   <footer>Uploads are processed in memory. Nothing is saved by the app. Load a new batch to replace the current view.</footer>
 </body>
