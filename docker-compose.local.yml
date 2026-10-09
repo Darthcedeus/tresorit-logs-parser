@@ -1,0 +1,12 @@
+# Optional: docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build
+services:
+  tresorit-logs-parser:
+    environment:
+      LOG_DATA_DIR: /data
+    volumes:
+      - type: bind
+        source: ../data
+        target: /data
+        read_only: true
+        bind:
+          create_host_path: false

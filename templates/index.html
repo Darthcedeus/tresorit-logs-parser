@@ -1,110 +1,28 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
-<div class="row">
-  <div class="col">
-    <div class="card">
-      <div class="card-header">
-        <h3>Add data</h3>
-      </div>
-      <div class="card-body">
-        <p class="card-text">Data can be added by uploading shared links csv exported from Tresorit</p>
-        <form action = "/process" method = "post" enctype="multipart/form-data">   
-          <div class="mb-3">
-            <input class="form-control" type="file" id="formFile" name="file">
-          </br>
-            <input class="btn btn-primary" type="submit" value="Upload">
-          </div>  
-        </form>   
-      </div>
-    </div>
-  </div>
-</div>
-
-</br>
-
-<div class="row">
-    <div class="col">
-      <div class="card">
-        <div class="card-header">
-          <h3>Active Links</h3>
-        </div>
-        <div class="card-body">
-          <table id="active-links" class="table table-striped" style="width:100%">
-            <thead>
-              <tr>
-                <th>Tresor</th>
-                <th>Creator Email</th>
-                <th>Link Target</th>
-                <th>Password Protected</th>
-                <th>Expiration Date</th>
-                <th>Email Verification</th>
-                <th>Email Allow List</th>
-              </tr>
-          </thead>
-          <tbody>
-            {% for link in active_links %}
-              <tr>
-                <td>{{ link.tresor }}</td>
-                <td>{{ link.creatorEmail }}</td>
-                <td>{{ link.linkTarget }}</td>
-                <td>{{ link.passwordProtected }}</td>
-                <td>{{ link.expirationDate }}</td>
-                <td>{{ link.emailVerification }}</td>
-                <td>{{ link.emailAllowList }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        </div>
-      </div>        
-    </div>
-</div>
-  
-</br>
-
-<div class="row">
-  <div class="col">
-    <div class="card">
-      <div class="card-header">
-        <h3>Inactive Links</h3>
-      </div>
-      <div class="card-body">
-        <table id="inactive-links" class="table table-striped" style="width:100%">
-          <thead>
-            <tr>
-              <th>Tresor</th>
-              <th>Creator Email</th>
-              <th>Link Target</th>
-              <th>Password Protected</th>
-              <th>Expiration Date</th>
-              <th>Email Verification</th>
-              <th>Email Allow List</th>
-            </tr>
-        </thead>
-        <tbody>
-          {% for link in inactive_links %}
-          <tr>
-            <td>{{ link.tresor }}</td>
-            <td>{{ link.creatorEmail }}</td>
-            <td>{{ link.linkTarget }}</td>
-            <td>{{ link.passwordProtected }}</td>
-            <td>{{ link.expirationDate }}</td>
-            <td>{{ link.emailVerification }}</td>
-            <td>{{ link.emailAllowList }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      </div>
-    </div>        
-  </div>
-</div>
-
-<script>	
-  new DataTable('#active-links');
-  new DataTable('#inactive-links');
-</script>
-
+<section class="intro"><div><p class="eyebrow">WORKSPACE INSIGHTS</p><h1>Understand your Tresorit logs.</h1><p class="muted">Explore sharing, access, storage and devices in one place.</p></div><a class="button subtle" href="/">Clear workspace</a></section>
+<section class="panel import-panel" aria-label="Import exports">
+  <div><h2>Load your exports</h2><p class="muted">Select several CSVs together. The export type is detected from its columns.</p><p class="hint">Shared links · Link activity · Folder summary · Folder members · External users · Device status</p></div>
+  <div class="import-actions"><form action="/process" method="post" enctype="multipart/form-data"><label class="sr-only" for="files">CSV exports</label><input type="file" id="files" name="file" accept=".csv,text/csv" multiple required><button class="primary" type="submit">Analyze exports</button></form><form action="/load-local" method="post"><button type="submit">Load local data folder</button><span class="hint">Latest export of each type · 32 MB upload limit</span></form></div>
+</section>
+{% for error in errors %}<p class="alert" role="alert">{{ error }}</p>{% endfor %}
+<script id="dashboard-data" type="application/json">{{ data | tojson }}</script>
+{% if data.reports %}
+<section class="workspace-overview" aria-label="Loaded workspace"><div><strong>{{ data.reports | length }} export types loaded</strong><span class="muted"> · Analysis at {{ data.analyzed_at[:19] | replace('T', ' ') }} (server time)</span></div><details><summary>Sources &amp; review rules</summary><ul>{% for report in data.reports %}<li>{{ report.label }}: {{ report.filename }} · {{ report.rows | length }} rows</li>{% endfor %}</ul><p>Review notes flag active links missing protection or expiration, failed or external access, external memberships, folders with ≥25% deleted storage, and unrevoked devices inactive for over {{ data.stale_days }} days. These are review prompts, not proof of a security incident. Dates are interpreted as day/month/year in the export's timezone; timezone information is not supplied by these CSVs. Current link status describes the loaded snapshot, not its status at the time of an event.</p><p>Export files can have different snapshot dates. Totals describe the rows you loaded, not live Tresorit state.</p></details></section>
+<nav id="tabs" class="tabs" aria-label="Export type"></nav>
+<section class="panel explorer">
+  <div class="section-heading"><div><p class="eyebrow">EXPORT EXPLORER</p><h2 id="report-title"></h2><p id="report-source" class="hint"></p></div><button id="export" type="button">Export filtered CSV</button></div>
+  <div class="filters"><label class="search-label">Search across loaded exports<input id="search" type="search" placeholder="Email, folder, link ID, IP address…"></label><label><span id="status-label">Status</span><select id="status"></select></label><label class="review-toggle"><input id="review-only" type="checkbox"> Rows with review notes</label><button id="reset" type="button" class="subtle">Reset filters</button></div>
+  <div class="date-filters"><label>Date field<select id="date-field"></select></label><label>From<input id="from" type="date"></label><label>To<input id="to" type="date"></label><p class="hint">Status, review and date filters apply to this export. Search follows you between tabs. Click an email or link ID to search related records.</p></div>
+  <p id="filter-error" class="alert" role="alert" hidden></p><div id="warnings"></div>
+  <div id="metrics" class="metrics" aria-live="polite"></div>
+  <div class="chart-grid"><section class="chart-panel"><div class="chart-heading"><h3 id="distribution-title"></h3><label>Group by<select id="group-field"></select></label></div><div id="distribution"></div></section><section class="chart-panel"><h3 id="secondary-title"></h3><div id="secondary"></div></section></div>
+  <div class="results-heading"><div><h3>Records</h3><p id="result-count" class="hint" aria-live="polite"></p></div><label>Rows per page<select id="page-size"><option>25</option><option>50</option><option>100</option></select></label></div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable export records"><table id="records"><caption class="sr-only">Filtered export records. Select a column heading to sort.</caption><thead></thead><tbody></tbody></table></div>
+  <div class="pagination"><button id="previous" type="button">← Previous</button><span id="page-label" aria-live="polite"></span><button id="next" type="button">Next →</button></div>
+</section>
+{% else %}
+<section class="empty-state"><span class="empty-icon">↗</span><h2>Your logs, connected.</h2><p>Load the local data folder or upload your exports to begin.</p><div class="feature-grid"><div><h3>Sharing &amp; access</h3><p>Spot unprotected links, failed access and external sharing. Follow a link ID across exports.</p></div><div><h3>Storage &amp; permissions</h3><p>Compare folder sizes, deleted storage, memberships and invitation status.</p></div><div><h3>Devices &amp; activity</h3><p>Review platforms, revoked devices, stale activity and daily event trends.</p></div></div></section>
+{% endif %}
+<noscript><p class="alert">Enable JavaScript to explore the charts, filters and records.</p></noscript>
 {% endblock %}
