@@ -51,6 +51,8 @@ may have different snapshot dates; check the source filenames before comparing.
 - Sort all columns, page through records, and download the full filtered result
   as CSV, including review notes. Dates and numbers sort by their typed values.
 - In **Link activity** and **Device status**, explore the offline country map.
+  The **Activity map** button beside Export filtered CSV opens the first loaded
+  export with location fields and scrolls directly to the map.
   Country shading can show records, review notes, failed events or external
   events (the last two apply to link activity). Click a country or city to filter
   the records and CSV download; reset filters to clear the selection.

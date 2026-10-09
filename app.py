@@ -1,6 +1,7 @@
 """Stateless dashboard for Tresorit administrative CSV exports."""
 
 import os
+from hashlib import sha256
 from itertools import islice
 from pathlib import Path
 
@@ -19,11 +20,22 @@ class BoundedRequest(Request):
 
 
 app = Flask(__name__)
+ASSET_VERSIONS = {
+    name: sha256((Path(app.static_folder) / name).read_bytes()).hexdigest()[:12]
+    for name in ("dashboard.css", "dashboard.js", "location-analysis.js", "theme.js", "favicon.svg", "world-map.json")
+}
 app.request_class = BoundedRequest
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
 app.config["MAX_FORM_PARTS"] = DEFAULT_LIMITS.max_files
 app.config["IMPORT_LIMITS"] = DEFAULT_LIMITS
 app.config["LOG_DATA_DIR"] = os.environ.get("LOG_DATA_DIR", str(Path(__file__).resolve().parent.parent / "data"))
+
+
+@app.url_defaults
+def version_static_assets(endpoint, values):
+    # Content hashes change asset URLs after deployment even behind browser caches.
+    if endpoint == "static" and values.get("filename") in ASSET_VERSIONS:
+        values.setdefault("v", ASSET_VERSIONS[values["filename"]])
 
 
 @app.after_request

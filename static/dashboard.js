@@ -26,6 +26,13 @@
     () => { page = 1; render(); },
     dateColumn => { if (selected.date_columns.includes(dateColumn)) $("date-field").value = dateColumn; page = 1; render(); }
   );
+  const mapReport = reports.find(report => report.location_sources?.length);
+  $("open-map").disabled = !mapReport;
+  $("open-map").title = mapReport ? "Open the activity geography map" : "Load Link activity or Device status with location columns to view a map";
+  $("open-map").addEventListener("click", () => {
+    select(mapReport);
+    $("location-heading").scrollIntoView({behavior: "smooth", block: "start"});
+  });
 
   function matches(row, report, local = true, locationFilter = true) {
     const query = $("search").value.trim().toLowerCase();
