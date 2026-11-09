@@ -1,2 +1,2 @@
 flask
-gunicorn>=25.1.0
+gunicorn>=26.2.0
